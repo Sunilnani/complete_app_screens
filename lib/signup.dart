@@ -1,0 +1,220 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_complete_app_screen/home.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+import 'otp.dart';
+class SignUp extends StatefulWidget {
+  @override
+  _SignUpState createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  bool hidepassword=true;
+  bool _loading = false;
+
+  dynamic res;
+
+  Future<void> _performLogin() async {
+    String name = _nameController.text.trim();
+    String email = _emailController.text.trim();
+    String mobile = _usernameController.text.trim();
+    String password = _passwordController.text.trim();
+    if (name.isEmpty) {
+      Fluttertoast.showToast(msg: "Invalid name");
+      return;
+    }
+    if (email.isEmpty) {
+      Fluttertoast.showToast(msg: "Invalid email");
+      return;
+    }
+
+    if (mobile.isEmpty) {
+      Fluttertoast.showToast(msg: "Invalid number");
+      return;
+    }
+    if (password.isEmpty) {
+      Fluttertoast.showToast(msg: "Invalid password");
+      return;
+    }
+    setState(() {
+      _loading = true;
+    });
+    // Map<String, dynamic> postData = {
+    //   "username": username,
+    //   "password": password,
+    // };
+    FormData formData = FormData.fromMap({
+      "mobile": mobile,
+      "password": password,
+      "name":name,
+      "email":email
+    });
+
+    Response response =
+    await Dio().post("https://networkintern.herokuapp.com/api/login",
+        data: formData,
+        options: Options(
+          validateStatus: (status) => status < 500,
+        ));
+
+    setState(() {
+      res = response.data;
+      _loading = false;
+    });
+    if (response.data['status']) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => OtpGenerate(
+            user: response.data['user'] ??
+                "", // response.data['user'] == null ? "" : response.data['user']
+          ),
+        ),
+      );
+    } else {
+      Fluttertoast.showToast(msg: response.data['message']);
+      print(response.data['message']);
+    }
+    print(response);
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Padding(padding: EdgeInsets.symmetric(horizontal: 25,vertical: 16),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 70,),
+                Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Sign Up",style: TextStyle(color: Color(0xFF2E3748),fontSize: 35,fontWeight: FontWeight.w700),)),
+                SizedBox(height: 20,),
+                Container(
+                  height: 48,
+                  child: TextField(
+                    controller:_nameController,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(borderSide: BorderSide(color: Color(0x01FF8701)),borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                            borderSide: BorderSide(color: Color(0xFFFF8701),width: 2)
+                        ),
+                        labelText: 'Name',
+                        labelStyle: TextStyle(color: Color(0xFFFF8701)),
+                        hintText: 'Denom'),
+                  ),
+                ),
+                SizedBox(height: 20,),
+                Container(
+                  height: 48,
+                  child: TextField(
+                    controller:_emailController,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(borderSide: BorderSide(color: Color(0x01FF8701)),borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                            borderSide: BorderSide(color: Color(0xFFFF8701),width: 2)
+                        ),
+                        labelText: 'E-mail',
+                        labelStyle: TextStyle(color: Color(0xFFFF8701)),
+                        hintText: 'Josh@gmail.com'),
+                  ),
+                ),
+                SizedBox(height: 20,),
+                Container(
+                  height: 48,
+                  child: TextField(
+                    controller:_usernameController,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(borderSide: BorderSide(color: Color(0x01FF8701)),borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                            borderSide: BorderSide(color: Color(0xFFFF8701),width: 2)
+                        ),
+                        labelText: 'Number',
+                        labelStyle: TextStyle(color: Color(0xFFFF8701)),
+                        hintText: '+91'),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  height: 48,
+                  child: TextField(
+                    controller: _passwordController,
+                    obscureText: hidepassword,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                            borderSide: BorderSide(color: Color(0xFFFF8701),width: 2)
+                        ),
+                        suffixIcon: IconButton(
+                            onPressed: (){
+                              setState(() {
+                                hidepassword= !hidepassword;
+                              });
+                            },
+                            icon:Icon(hidepassword?Icons.visibility_off:Icons.visibility)
+                        ),
+                        labelText: 'password',
+                        labelStyle: TextStyle(color: Color(0xFFFF8701)),
+                        hintText: 'password'),
+                  ),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                if (_loading)
+                  Center(
+                    child: CircularProgressIndicator(),
+                  )
+                else
+                  Container(
+                    height: 55,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                        color: Color(0xFFFF8701), borderRadius: BorderRadius.circular(20)),
+                    child: FlatButton(
+                      onPressed: () {
+                        _performLogin();
+                      },
+                      child: Text(
+                        'Sign Up',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
+                  ),
+                SizedBox(height: 25,),
+                Text("-OR-",style: TextStyle(color: Color(0xFF000000)),),
+                SizedBox(height: 18,),
+                Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset("img/google.png",height: 40,),
+                      Text("Sign in with google")
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
