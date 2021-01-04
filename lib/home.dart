@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_app_screen/my%20jiivo.dart';
+import 'package:flutter_complete_app_screen/otp.dart';
+import 'package:flutter_complete_app_screen/profile.dart';
 import 'package:flutter_complete_app_screen/signup.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -12,7 +14,7 @@ class HomePage extends StatefulWidget {
 class _LoginPageState extends State<HomePage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool hidepassword=true;
+  bool hidepassword=false;
   bool _loading = false;
 
   dynamic res;
@@ -140,7 +142,7 @@ class _LoginPageState extends State<HomePage> {
                   )
                 else
                   Container(
-                    height: 55,
+                    height: 50,
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                       boxShadow: [
@@ -174,7 +176,7 @@ class _LoginPageState extends State<HomePage> {
                     FlatButton(
                       onPressed: (){
                         Navigator.push(
-                            context, MaterialPageRoute(builder: (context) => SignUp()));
+                            context, MaterialPageRoute(builder: (context) =>SignUp()));
                       },
                       child: Text(
                         'Sign Up',

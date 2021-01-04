@@ -5,6 +5,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'otp.dart';
 class SignUp extends StatefulWidget {
+  SignUp({this.user});
+  final user;
   @override
   _SignUpState createState() => _SignUpState();
 }
@@ -92,7 +94,7 @@ class _SignUpState extends State<SignUp> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 70,),
+                SizedBox(height: 120,),
                 Container(
                     alignment: Alignment.centerLeft,
                     child: Text("Sign Up",style: TextStyle(color: Color(0xFF2E3748),fontSize: 35,fontWeight: FontWeight.w700),)),
@@ -180,10 +182,21 @@ class _SignUpState extends State<SignUp> {
                   )
                 else
                   Container(
-                    height: 55,
+                    height: 50,
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                        color: Color(0xFFFF8701), borderRadius: BorderRadius.circular(20)),
+                        color: Color(0xFFFF8701), borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xFFFF8701),
+                          offset: const Offset(
+                            0.0,
+                            5.0,
+                          ),
+                          blurRadius: 8.0,
+                        ), //BoxShadow
+                      ],
+                    ),
                     child: FlatButton(
                       onPressed: () {
                         _performLogin();
@@ -202,11 +215,16 @@ class _SignUpState extends State<SignUp> {
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: Color(0xFFE3EAF2),
+                        width: 2,
+                      )
                   ),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset("img/google.png",height: 40,),
-                      Text("Sign in with google")
+                      Image.asset("img/google.png",height: 25,),
+                      Text("Sign in with google",style: TextStyle(fontSize: 14),)
                     ],
                   ),
                 )
