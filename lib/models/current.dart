@@ -1,15 +1,15 @@
 // To parse this JSON data, do
 //
-//     final welcome = welcomeFromJson(jsonString);
+//     final welcomes = welcomesFromJson(jsonString);
 
 import 'dart:convert';
 
-Welcome welcomeFromJson(String str) => Welcome.fromJson(json.decode(str));
+Welcomes welcomesFromJson(String str) => Welcomes.fromJson(json.decode(str));
 
-String welcomeToJson(Welcome data) => json.encode(data.toJson());
+String welcomesToJson(Welcomes data) => json.encode(data.toJson());
 
-class Welcome {
-  Welcome({
+class Welcomes {
+  Welcomes({
     this.status,
     this.events,
   });
@@ -17,7 +17,7 @@ class Welcome {
   bool status;
   List<Event> events;
 
-  factory Welcome.fromJson(Map<String, dynamic> json) => Welcome(
+  factory Welcomes.fromJson(Map<String, dynamic> json) => Welcomes(
     status: json["status"],
     events: List<Event>.from(json["events"].map((x) => Event.fromJson(x))),
   );

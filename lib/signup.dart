@@ -16,7 +16,7 @@ class _SignUpState extends State<SignUp> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  bool hidepassword=true;
+  bool hidepassword=false;
   bool _loading = false;
 
   dynamic res;

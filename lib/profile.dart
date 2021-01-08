@@ -1,118 +1,337 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-class Profile extends StatefulWidget {
+import 'package:flutter_complete_app_screen/home.dart';
+
+import 'models/profile.dart';
+
+
+class ProfileClass extends StatefulWidget {
   @override
-  _ProfileState createState() => _ProfileState();
+  _ProfileClassState createState() => _ProfileClassState();
 }
 
-class _ProfileState extends State<Profile> {
-  List<IconData> icons=[Icons.person,Icons.alternate_email,Icons.location_on_outlined,Icons.keyboard,Icons.add_call];
-  List<String> titles=["Username","E-Mail","Location","Password change","Mobile Number"];
-  List<String> subtitles=["Denim Josh","DenimJosh@gmail.com","Mumbai","........","+918674848838"];
+class _ProfileClassState extends State<ProfileClass> {
+  Profile listTodos = Profile();
+  bool fetching = true;
+  void getHttp() async {
+    setState(() {
+      fetching = true;
+    });
+    try {
+      Response response =
+      await Dio().get("https://networkintern.herokuapp.com/api/profile");
+      setState(() {
+        listTodos = profileFromJson(jsonEncode(response.data)) ;
+        fetching = false;
+        print(response);
+      });
+    } catch (e) {
+      setState(() {
+        fetching = false;
+      });
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    getHttp();
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    if (fetching) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    if (listTodos.photo.length == 0) {
+      return Center(
+        child: Text("No Data"),
+      );
+    }
     return Scaffold(
-      appBar:AppBar(
+      appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('Profile',style: TextStyle(color: Colors.black,fontSize: 17,fontWeight: FontWeight.w600),),
-        leading: Icon(Icons.arrow_back,color: Colors.black,),
+        toolbarHeight: 80,
+        elevation: 2,
+        shadowColor: Color(0xff00000D),
+
+        leading: IconButton(icon: Icon(Icons.arrow_back_sharp ,size: 25, color:Color(0xff000000)) ,onPressed: (){
+          Navigator.pop(context);
+        }, ),
+        titleSpacing: 0,
+        title: Text("Profile" , style: TextStyle(color: Color(0xff000000),fontSize: 17),),
       ),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 25),
-        color: Color(0xFFF7FBFE),
-        child: Center(
+      body: SingleChildScrollView(
+        child:  Container(
+          color: Color(0xffF7FBFE) ,
+          margin: EdgeInsets.symmetric(vertical: 30 ,horizontal:23 ),
           child: Column(
             children: [
-              SizedBox(height: 30,),
-              CircleAvatar(
-                backgroundImage:AssetImage("img/sunil.jpg"),
-                radius: 48,),
-              SizedBox(height: 15,),
-              Text("Denim Josh",style: TextStyle(color: Color(0xFF2E3748),fontSize: 20,fontWeight: FontWeight.w500),),
-              Text("mumabi",style: TextStyle(color: Color(0xFF9FA5BB),fontSize: 15),),
-              SizedBox(height: 15,),
-              Container(
-                child: ListView.builder(
-                  itemCount: titles.length,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index){
-                    return ProfileData(
-                      title: titles[index],
-                      subtitle: subtitles[index],
-                      icon: icons[index],
-                    );
-                  },
-                ),
-              ),
-              SizedBox(height: 15,),
+
               Container(
                 alignment: Alignment.center,
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Color(0xFFFF8701)
+                child: CircleAvatar(
+
+                  backgroundImage: NetworkImage("${listTodos.photo}"),
+                  radius: 50,
                 ),
-                child: Text("LogOut",style: TextStyle(color: Colors.white,fontSize: 15,fontWeight: FontWeight.w500),),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ProfileData extends StatelessWidget {
-  const ProfileData({
-    this.icon,
-    this.title,
-    this.subtitle,
-    Key key,
-  }) : super(key: key);
-  final icon;
-  final title;
-  final subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: Container(
-        height: 54,
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Color(0xFFFFFFFF)
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              child: Row(
+              ),
+              SizedBox(height: 21,),
+              Container(
+                alignment: Alignment.center,
+                child: Text("${listTodos.name}" ,style: TextStyle(color:Color(0xff2E3748) , fontSize: 20 ,)
+                ),
+              ),
+              SizedBox(height: 2,),
+              Container(
+                alignment: Alignment.center,
+                child: Text("${listTodos.location}" ,style: TextStyle(color:Color(0xff9FA5BB) , fontSize: 15 ,)
+                ),
+              ),
+              SizedBox(height:15,),
+              Column(
                 children: [
-                  CircleAvatar(
-                    child: Icon(icon),
-                    radius: 18,
-                    backgroundColor: Color(0xFFF4F8FF),
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 14 , horizontal: 18),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Color(0xff0000000D),
+                              offset: Offset(0,3),
+                              blurRadius: 20
+                          )
+                        ]
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: Color(0xffF4F8FF),
+                              child: Icon(Icons.person , color: Color(0xff2E3748),),
+                            ),
+                            SizedBox(width: 16,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Username" , style:TextStyle(color: Color(0xff9FA5BB) , fontWeight: FontWeight.w500,fontSize: 13), ),
+                                SizedBox(height: 5,),
+                                Text("${listTodos.name}" , style: TextStyle(color: Color(0xff2E3748), fontWeight: FontWeight.w500 , fontSize: 12),
+                                ),
+
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        Text("Edit", style: TextStyle(color: Color(0xffFF8701), fontWeight: FontWeight.w500 , fontSize: 15),
+                        ),
+
+                      ],
+                    ),
                   ),
-                  SizedBox(width: 5,),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title,style: TextStyle(color: Color(0xFF9FA5BB),fontSize: 13),),
-                      SizedBox(height: 5,),
-                      Text(subtitle,style: TextStyle(color: Color(0xFF2E3748),fontSize: 12,),)
-                    ],
-                  )
+
+                  SizedBox(height: 10,),
+
+
                 ],
               ),
-            ),
-            Container(
-                child: Text("Edit",style: TextStyle(color: Colors.deepOrange,fontSize: 15),),
-            )
-          ],
+              SizedBox(height: 10,),
+              Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 14 , horizontal: 18),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Color(0xff0000000D),
+                              offset: Offset(0,3),
+                              blurRadius: 20
+                          )
+                        ]
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: Color(0xffF4F8FF),
+                              child: Text("@" , style: TextStyle(color: Color(0xff2E3748) ,fontSize: 18 ,fontWeight: FontWeight.bold),),
+                            ),
+                            SizedBox(width: 16,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("E-mail" , style:TextStyle(color: Color(0xff9FA5BB) , fontWeight: FontWeight.w500,fontSize: 13), ),
+                                SizedBox(height: 5,),
+                                Text("${listTodos.email}" , style: TextStyle(color: Color(0xff2E3748), fontWeight: FontWeight.w500 , fontSize: 12),
+                                ),
+
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        Text("Edit", style: TextStyle(color: Color(0xffFF8701), fontWeight: FontWeight.w500 , fontSize: 15),
+                        ),
+
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 10,),
+
+
+                ],
+              ),
+              SizedBox(height: 10,),
+              Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 14 , horizontal: 18),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Color(0xff0000000D),
+                              offset: Offset(0,3),
+                              blurRadius: 20
+                          )
+                        ]
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: Color(0xffF4F8FF),
+                              child: Icon(Icons.location_on_outlined , color: Color(0xff2E3748),),
+                            ),
+                            SizedBox(width: 16,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Location" , style:TextStyle(color: Color(0xff9FA5BB) , fontWeight: FontWeight.w500,fontSize: 13), ),
+                                SizedBox(height: 5,),
+                                Text("${listTodos.location}" , style: TextStyle(color: Color(0xff2E3748), fontWeight: FontWeight.w500 , fontSize: 12),
+                                ),
+
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        Text("Edit", style: TextStyle(color: Color(0xffFF8701), fontWeight: FontWeight.w500 , fontSize: 15),
+                        ),
+
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 10,),
+
+
+                ],
+              ),
+              SizedBox(height: 10,),
+              Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 14 , horizontal: 18),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Color(0xff0000000D),
+                              offset: Offset(0,3),
+                              blurRadius: 20
+                          )
+                        ]
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: Color(0xffF4F8FF),
+                              child: Icon(Icons.phone, color: Color(0xff2E3748),),
+                            ),
+                            SizedBox(width: 16,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Mobile No." , style:TextStyle(color: Color(0xff9FA5BB) , fontWeight: FontWeight.w500,fontSize: 13), ),
+                                SizedBox(height: 5,),
+                                Text("${listTodos.mobile}" , style: TextStyle(color: Color(0xff2E3748), fontWeight: FontWeight.w500 , fontSize: 12),
+                                ),
+
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        Text("Edit", style: TextStyle(color: Color(0xffFF8701), fontWeight: FontWeight.w500 , fontSize: 15),
+                        ),
+
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 10,),
+
+
+                ],
+              ),
+
+
+
+              SizedBox(height: 10,),
+              Container(
+                height: 50,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                          color: Color(0xffFF87011a),
+                          offset: Offset(0, 5),
+                          blurRadius: 10
+                      )
+                    ]
+                ),
+                child: RaisedButton(onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
+                } ,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    color: Color(0xffFF8701),
+                    child: Text("Logout" , style: TextStyle(color: Color(0xFFFFFFFF) ,
+                        fontSize: 14),)),
+              ),
+
+            ],
+          ),
         ),
       ),
     );
