@@ -188,12 +188,12 @@ class _SignUpState extends State<SignUp> {
                         color: Color(0xFFFF8701), borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFFFF8701),
+                          color: Color(0xFF87011A),
                           offset: const Offset(
                             0.0,
                             5.0,
                           ),
-                          blurRadius: 8.0,
+                          blurRadius: 10.0,
                         ), //BoxShadow
                       ],
                     ),

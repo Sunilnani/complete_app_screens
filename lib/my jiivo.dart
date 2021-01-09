@@ -55,7 +55,7 @@ class CurrentEvent extends StatefulWidget {
 }
 
 class _CurrentEventState extends State<CurrentEvent> {
-  Welcomes listTodos = Welcomes();
+  Welcomes listcurrent = Welcomes();
   bool _fetching = true;
   void getHttp() async {
     setState(() {
@@ -65,7 +65,7 @@ class _CurrentEventState extends State<CurrentEvent> {
       Response response =
       await Dio().get("https://networkintern.herokuapp.com/api/events?type=current");
       setState(() {
-        listTodos = welcomesFromJson(jsonEncode(response.data));
+        listcurrent = welcomesFromJson(jsonEncode(response.data));
         _fetching = false;
       });
       print(response);
@@ -136,20 +136,23 @@ class _CurrentEventState extends State<CurrentEvent> {
         child: CircularProgressIndicator(),
       );
     }
-    if (listTodos.events.length == 0) {
+    if (listcurrent.events.length == 0) {
       return Center(
         child: Text("No Data"),
       );
     }
     return Expanded(
       child: ListView.builder(
-        itemCount: listTodos.events.length,
+        itemCount: listcurrent.events.length,
         itemBuilder: (context, index) {
-          Welcomes todo = listTodos;
+          Welcomes current = listcurrent;
           return CurrentEvents(
-            title: todo.events[index].title,
-            image: todo.events[index].bannerImage,
-            location: todo.events[index].location,
+            title: current.events[index].title,
+            image: current.events[index].bannerImage,
+            location: current.events[index].location,
+            description: current.events[index].description,
+            from: current.events[index].from,
+            to: current.events[index].to,
           );
         },
       ),
@@ -162,11 +165,17 @@ class CurrentEvents extends StatelessWidget {
     this.title,
     this.image,
     this.location,
+    this.description,
+    this.from,
+    this.to,
     Key key,
   }) : super(key: key);
   final String title;
   final String image;
   final String location;
+  final String description;
+  final String from;
+  final String to;
 
   @override
   Widget build(BuildContext context) {
@@ -229,12 +238,12 @@ class CurrentEvents extends StatelessWidget {
               Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-                  child: Text("Google Devfest",style: TextStyle(color: Color(0xFF2A3E68),fontSize: 16,fontWeight: FontWeight.w500),)
+                  child: Text(description,style: TextStyle(color: Color(0xFF2A3E68),fontSize: 16,fontWeight: FontWeight.w500),)
               ),
               Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-                  child: Text("10:30AM - 01:00PM  .  $location",style: TextStyle(color: Color(0xFFA1A0A0),fontSize: 13,fontWeight: FontWeight.w500),)
+                  child: Text("$from - $to  .  $location",style: TextStyle(color: Color(0xFFA1A0A0),fontSize: 13,fontWeight: FontWeight.w500),)
               ),
               Container(
                 alignment: Alignment.bottomRight,
@@ -294,7 +303,7 @@ class PastEvent extends StatefulWidget {
 }
 
 class _PastEventState extends State<PastEvent> {
-  Welcoming listTodos = Welcoming();
+  Welcoming listpast = Welcoming();
   bool _fetching = true;
   void getHttp() async {
     setState(() {
@@ -304,7 +313,7 @@ class _PastEventState extends State<PastEvent> {
       Response response =
       await Dio().get("https://networkintern.herokuapp.com/api/events?type=past");
       setState(() {
-        listTodos = welcomingFromJson(jsonEncode(response.data));
+        listpast = welcomingFromJson(jsonEncode(response.data));
         _fetching = false;
       });
       print(response);
@@ -375,20 +384,23 @@ class _PastEventState extends State<PastEvent> {
         child: CircularProgressIndicator(),
       );
     }
-    if (listTodos.events.length == 0) {
+    if (listpast.events.length == 0) {
       return Center(
         child: Text("No Data"),
       );
     }
     return Expanded(
       child: ListView.builder(
-        itemCount: listTodos.events.length,
+        itemCount: listpast.events.length,
         itemBuilder: (context, index) {
-          Welcoming todo = listTodos;
+          Welcoming past = listpast;
           return CurrentEvents(
-            title: todo.events[index].title,
-            image: todo.events[index].bannerImage,
-            location: todo.events[index].location,
+            title: past.events[index].title,
+            image: past.events[index].bannerImage,
+            location: past.events[index].location,
+            description: past.events[index].description,
+            from: past.events[index].from,
+            to: past.events[index].to,
           );
         },
       ),
@@ -401,11 +413,17 @@ class PastEvents extends StatelessWidget {
     this.title,
     this.image,
     this.location,
+    this.description,
+    this.from,
+    this.to,
     Key key,
   }) : super(key: key);
   final String title;
   final String image;
   final String location;
+  final String description;
+  final String from;
+  final String to;
 
   @override
   Widget build(BuildContext context) {
@@ -463,8 +481,8 @@ class PastEvents extends StatelessWidget {
                         child: Text(title,style: TextStyle(color: Color(0xFF2A3E68),fontSize: 13,fontWeight: FontWeight.w500),),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(right:28.0),
+                    Container(
+                      alignment: Alignment.bottomRight    ,
                       child: Icon(Icons.favorite_border_outlined,color: Colors.orange,),
                     )
                   ],
@@ -474,12 +492,12 @@ class PastEvents extends StatelessWidget {
               Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-                  child: Text("Google Devfest",style: TextStyle(color: Color(0xFF2A3E68),fontSize: 16,fontWeight: FontWeight.w500),)
+                  child: Text(description,style: TextStyle(color: Color(0xFF2A3E68),fontSize: 16,fontWeight: FontWeight.w500),)
               ),
               Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-                  child: Text("10:30AM - 01:00PM  .  $location",style: TextStyle(color: Color(0xFFA1A0A0),fontSize: 13,fontWeight: FontWeight.w500),)
+                  child: Text("$from - $to  .  $location",style: TextStyle(color: Color(0xFFA1A0A0),fontSize: 13,fontWeight: FontWeight.w500),)
               ),
               Container(
                 alignment: Alignment.bottomRight,

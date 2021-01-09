@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_app_screen/my%20jiivo.dart';
-import 'package:flutter_complete_app_screen/otp.dart';
-import 'package:flutter_complete_app_screen/profile.dart';
 import 'package:flutter_complete_app_screen/signup.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -147,7 +145,7 @@ class _LoginPageState extends State<HomePage> {
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFFFF8701),
+                          color: Color(0x3B83FC33),
                           offset: const Offset(
                             0.0,
                             5.0,
@@ -172,7 +170,7 @@ class _LoginPageState extends State<HomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Dont hve an account?",style: TextStyle(color: Color(0xFF9FA5BB),fontSize: 15),),
+                    Text("Dont have an account?",style: TextStyle(color: Color(0xFF9FA5BB),fontSize: 15),),
                     FlatButton(
                       onPressed: (){
                         Navigator.push(
@@ -188,7 +186,22 @@ class _LoginPageState extends State<HomePage> {
                 SizedBox(height: 136,),
                 Text("-Or sign in with Fingerprint-",style: TextStyle(color: Color(0xFF1E2C40),fontSize: 15),),
                 SizedBox(height: 15,),
-                Image.asset("img/fingerprint.png",height: 58,)
+                Container(
+                  alignment: Alignment.bottomCenter,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF87015C),
+                        offset: const Offset(
+                          0.0,
+                          3.0,
+                        ),
+                        blurRadius: 6.0,
+                      ),
+                    ],
+                  ),
+                    child: Image.asset("img/fingerprint.png",height: 58,))
               ],
             ),
           ),
