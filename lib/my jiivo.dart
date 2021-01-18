@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_app_screen/models/past.dart';
 import 'package:flutter_complete_app_screen/profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'models/current.dart';
 
 class MyJiivo extends StatelessWidget {
@@ -62,8 +63,17 @@ class _CurrentEventState extends State<CurrentEvent> {
       _fetching = true;
     });
     try {
+      SharedPreferences prefs= await SharedPreferences.getInstance();
+      String token = prefs.get("token");
       Response response =
-      await Dio().get("https://networkintern.herokuapp.com/api/events?type=current");
+      await Dio().get("https://networkintern.herokuapp.com/api/events?type=current",
+          options: Options(
+              validateStatus: (status) => status < 500,
+              headers: {
+                "Authorization":"Bearer $token"
+              }
+          )
+      );
       setState(() {
         listcurrent = welcomesFromJson(jsonEncode(response.data));
         _fetching = false;
@@ -310,8 +320,17 @@ class _PastEventState extends State<PastEvent> {
       _fetching = true;
     });
     try {
+      SharedPreferences prefs= await SharedPreferences.getInstance();
+      String token = prefs.get("token");
       Response response =
-      await Dio().get("https://networkintern.herokuapp.com/api/events?type=past");
+      await Dio().get("https://networkintern.herokuapp.com/api/events?type=past",
+          options: Options(
+              validateStatus: (status) => status < 500,
+              headers: {
+                "Authorization":"Bearer $token"
+              }
+          )
+      );
       setState(() {
         listpast = welcomingFromJson(jsonEncode(response.data));
         _fetching = false;
@@ -325,11 +344,6 @@ class _PastEventState extends State<PastEvent> {
     }
   }
   int pressedButtonNo ;
-  @override
-  void initState() {
-    getHttp();
-    super.initState();
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_app_screen/home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models/profile.dart';
 
@@ -21,8 +22,17 @@ class _ProfileClassState extends State<ProfileClass> {
       fetching = true;
     });
     try {
+      SharedPreferences prefs= await SharedPreferences.getInstance();
+      String token = prefs.get("token");
       Response response =
-      await Dio().get("https://networkintern.herokuapp.com/api/profile");
+      await Dio().get("https://networkintern.herokuapp.com/api/profile",
+          options: Options(
+              validateStatus: (status) => status < 500,
+              headers: {
+                "Authorization":"Bearer $token"
+              }
+          )
+      );
       setState(() {
         listTodos = profileFromJson(jsonEncode(response.data)) ;
         fetching = false;

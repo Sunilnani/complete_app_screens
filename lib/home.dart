@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_app_screen/my%20jiivo.dart';
 import 'package:flutter_complete_app_screen/signup.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -40,7 +41,8 @@ class _LoginPageState extends State<HomePage> {
       "mobile": mobile,
       "password": password,
     });
-
+    SharedPreferences prefs= await SharedPreferences.getInstance();
+    String token = prefs.get("token");
     Response response =
     await Dio().post("https://networkintern.herokuapp.com/api/login",
         data: formData,
@@ -53,11 +55,12 @@ class _LoginPageState extends State<HomePage> {
       _loading = false;
     });
     if (response.data['status']) {
+      prefs.setString("token",response.data["token"]);
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => MyJiivo(
             user: response.data['user'] ??
-                "", // response.data['user'] == null ? "" : response.data['user']
+                " ", // response.data['user'] == null ? "" : response.data['user']
           ),
         ),
       );

@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_app_screen/home.dart';
+import 'package:flutter_complete_app_screen/my%20jiivo.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OtpGenerate extends StatefulWidget {
   OtpGenerate({this.user});
@@ -37,20 +38,25 @@ class _OtpGeneratePageState extends State<OtpGenerate> {
       "otp": number,
 
     });
+    SharedPreferences prefs= await SharedPreferences.getInstance();
+    String token = prefs.get("token");
     Response response =
     await Dio().post("https://networkintern.herokuapp.com/api/otp/validate",
         data: formData,
         options: Options(
           validateStatus: (status) => status < 500,
+            headers: {
+              "Authorization":"Bearer $token"
+            }
         ));
     setState(() {
       res = response.data;
       loading = false;
     });
     if (response.data['status']) {
-
+      prefs.setString("token",response.data["token"]);
       Navigator.push(context, MaterialPageRoute(
-          builder: (context) =>  HomePage()));
+          builder: (context) =>  MyJiivo()));
     }
     else{
       Fluttertoast.showToast(msg: response.data['message']);
@@ -70,7 +76,7 @@ class _OtpGeneratePageState extends State<OtpGenerate> {
             Text("Verification" , style: TextStyle(color: Color(0xff2E3748) ,
                 fontSize: 35, fontWeight: FontWeight.w400),),
             SizedBox(height: 15,),
-            Flexible(child: Text("6 - Digit PIN has been sent to your phone, " ,style: TextStyle(color: Color(0xff9FA5BB) ,
+            Flexible(child: Text("5 - Digit PIN has been sent to your phone, " ,style: TextStyle(color: Color(0xff9FA5BB) ,
                 fontSize: 14 ),)),
             SizedBox(height: 3,),
             Flexible(child: Text("enter it below to continue.",style: TextStyle(color: Color(0xff9FA5BB) ,fontSize: 14))),

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_app_screen/home.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'otp.dart';
 class SignUp extends StatefulWidget {
@@ -56,7 +57,8 @@ class _SignUpState extends State<SignUp> {
       "name":name,
       "email":email
     });
-
+    SharedPreferences prefs= await SharedPreferences.getInstance();
+    String token = prefs.get("token");
     Response response =
     await Dio().post("https://networkintern.herokuapp.com/api/login",
         data: formData,
@@ -69,6 +71,7 @@ class _SignUpState extends State<SignUp> {
       _loading = false;
     });
     if (response.data['status']) {
+      prefs.setString("token",response.data["token"]);
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => OtpGenerate(
