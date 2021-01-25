@@ -54,7 +54,6 @@ class _OtpGeneratePageState extends State<OtpGenerate> {
       loading = false;
     });
     if (response.data['status']) {
-      prefs.setString("token",response.data["token"]);
       Navigator.push(context, MaterialPageRoute(
           builder: (context) =>  MyJiivo()));
     }

@@ -5,6 +5,8 @@ import 'package:flutter_complete_app_screen/signup.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'base_network.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -43,8 +45,7 @@ class _LoginPageState extends State<HomePage> {
     });
     SharedPreferences prefs= await SharedPreferences.getInstance();
     String token = prefs.get("token");
-    Response response =
-    await Dio().post("https://networkintern.herokuapp.com/api/login",
+    Response response = await dioClient.tokenRef.post("/api/login",
         data: formData,
         options: Options(
           validateStatus: (status) => status < 500,

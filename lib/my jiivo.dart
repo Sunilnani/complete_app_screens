@@ -1,11 +1,12 @@
 import 'dart:convert';
-
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_app_screen/models/past.dart';
 import 'package:flutter_complete_app_screen/profile.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'base_network.dart';
 import 'models/current.dart';
 
 class MyJiivo extends StatelessWidget {
@@ -56,6 +57,7 @@ class CurrentEvent extends StatefulWidget {
 }
 
 class _CurrentEventState extends State<CurrentEvent> {
+  List<String> stackimages=["img/sunil.jpg","img/google.jpg","img/event.jpg","img/sunil.jpg"];
   Welcomes listcurrent = Welcomes();
   bool _fetching = true;
   void getHttp() async {
@@ -65,8 +67,7 @@ class _CurrentEventState extends State<CurrentEvent> {
     try {
       SharedPreferences prefs= await SharedPreferences.getInstance();
       String token = prefs.get("token");
-      Response response =
-      await Dio().get("https://networkintern.herokuapp.com/api/events?type=current",
+      Response response = await dioClient.ref.get("/api/events?type=current",
           options: Options(
               validateStatus: (status) => status < 500,
               headers: {
@@ -92,6 +93,8 @@ class _CurrentEventState extends State<CurrentEvent> {
     getHttp();
     super.initState();
   }
+  //DateTime date = DateTime.now();
+  //DateFormat dateFormat=DateFormat("d");
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,6 +166,8 @@ class _CurrentEventState extends State<CurrentEvent> {
             description: current.events[index].description,
             from: current.events[index].from,
             to: current.events[index].to,
+            date: current.events[index].date,
+            stackimages: stackimages[index],
           );
         },
       ),
@@ -178,6 +183,8 @@ class CurrentEvents extends StatelessWidget {
     this.description,
     this.from,
     this.to,
+    this.date,
+    this.stackimages,
     Key key,
   }) : super(key: key);
   final String title;
@@ -186,6 +193,9 @@ class CurrentEvents extends StatelessWidget {
   final String description;
   final String from;
   final String to;
+  final DateTime date;
+  final String stackimages;
+
 
   @override
   Widget build(BuildContext context) {
@@ -230,8 +240,9 @@ class CurrentEvents extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("22",style: TextStyle(color: Colors.red,fontSize: 11,fontWeight: FontWeight.w500),),
-                          Text("Feb",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500,fontSize: 6),)
+                          //Text(DateFormat("d").format(date)),
+                          Text(DateFormat("MMM").format(date),style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500,fontSize: 8),),
+                          Text(DateFormat("d").format(date),style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500,fontSize: 8),)
                         ],
                       ),
                     ),
@@ -299,7 +310,29 @@ class CurrentEvents extends StatelessWidget {
 
                   ],
                 ),
-              )
+              ),
+              //Container(
+                //alignment: Alignment.bottomRight,
+                //padding: EdgeInsets.symmetric(horizontal: 8),
+                //child: Stack(
+                  //children: [
+                    //for (int i=0;i<(stackimages.length>3?3:stackimages.length);i++)
+                      //Positioned(
+                        //  left: i * 30.0,
+                          //child:CircleAvatar(
+                            //backgroundImage:AssetImage(stackimages[i]),
+                            //radius: 10,
+                          //)
+                      //),
+                    //Positioned(
+                      //  left: 3 * 30.0,
+                        //child:CircleAvatar(
+                          //child: Text("${stackimages.length - 3}+"),
+                          //radius: 10,
+                        //))
+                  //],
+                //),
+              //)
             ],
           ),
         ),
@@ -322,8 +355,7 @@ class _PastEventState extends State<PastEvent> {
     try {
       SharedPreferences prefs= await SharedPreferences.getInstance();
       String token = prefs.get("token");
-      Response response =
-      await Dio().get("https://networkintern.herokuapp.com/api/events?type=past",
+      Response response = await dioClient.ref.get("/api/events?type=past",
           options: Options(
               validateStatus: (status) => status < 500,
               headers: {
@@ -415,6 +447,7 @@ class _PastEventState extends State<PastEvent> {
             description: past.events[index].description,
             from: past.events[index].from,
             to: past.events[index].to,
+            date: past.events[index].date,
           );
         },
       ),
@@ -430,6 +463,7 @@ class PastEvents extends StatelessWidget {
     this.description,
     this.from,
     this.to,
+    this.date,
     Key key,
   }) : super(key: key);
   final String title;
@@ -438,7 +472,7 @@ class PastEvents extends StatelessWidget {
   final String description;
   final String from;
   final String to;
-
+  final DateTime date;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -483,8 +517,8 @@ class PastEvents extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("22",style: TextStyle(color: Colors.red,fontSize: 11,fontWeight: FontWeight.w500),),
-                            Text("Feb",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500,fontSize: 6),)
+                            Text(DateFormat("MMM").format(date),style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500,fontSize: 8),),
+                            Text(DateFormat("d").format(date),style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500,fontSize: 8),)
                           ],
                         ),
                       ),
