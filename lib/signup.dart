@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_app_screen/home.dart';
+import 'package:flutter_complete_app_screen/response_authentications/base_response.dart';
+import 'package:flutter_complete_app_screen/response_authentications/login_authentication.dart';
+import 'package:flutter_complete_app_screen/response_authentications/signup_authentication.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,39 +55,30 @@ class _SignUpState extends State<SignUp> {
     //   "username": username,
     //   "password": password,
     // };
-    FormData formData = FormData.fromMap({
+    Map<String,dynamic > data = {
       "mobile": mobile,
       "password": password,
       "name":name,
       "email":email
-    });
-    SharedPreferences prefs= await SharedPreferences.getInstance();
-    String token = prefs.get("token");
-    Response response = await dioClient.tokenRef.post("/api/login",
-        data: formData,
-        options: Options(
-          validateStatus: (status) => status < 500,
-        ));
-
+    };
+    ResponseData responseData = await signupManager.createLoginToken(data);
     setState(() {
-      res = response.data;
+      res = responseData.data;
       _loading = false;
     });
-    if (response.data['status']) {
-      prefs.setString("token",response.data["token"]);
+    if (responseData.status == ResponseStatus.SUCCESS) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => OtpGenerate(
-            user: response.data['user'] ??
+          builder: (context) => OtpGenerate( 
+            user: responseData.data['user'] ??
                 "", // response.data['user'] == null ? "" : response.data['user']
           ),
         ),
       );
+      // Navigate forward
     } else {
-      Fluttertoast.showToast(msg: response.data['message']);
-      print(response.data['message']);
+      Fluttertoast.showToast(msg: responseData.message);
     }
-    print(response);
   }
   @override
   Widget build(BuildContext context) {

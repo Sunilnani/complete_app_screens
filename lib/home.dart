@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_app_screen/my%20jiivo.dart';
+import 'package:flutter_complete_app_screen/response_authentications/base_response.dart';
+import 'package:flutter_complete_app_screen/response_authentications/login_authentication.dart';
 import 'package:flutter_complete_app_screen/signup.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'base_network.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -39,39 +39,29 @@ class _LoginPageState extends State<HomePage> {
     //   "username": username,
     //   "password": password,
     // };
-    FormData formData = FormData.fromMap({
+    Map<String,dynamic> data = {
       "mobile": mobile,
       "password": password,
-    });
-    SharedPreferences prefs= await SharedPreferences.getInstance();
-    String token = prefs.get("token");
-    Response response = await dioClient.tokenRef.post("/api/login",
-        data: formData,
-        options: Options(
-          validateStatus: (status) => status < 500,
-        ));
-
+    };
+    ResponseData responseData = await loginManager.createLoginToken(data);
     setState(() {
-      res = response.data;
+      res = responseData.data;
       _loading = false;
     });
-    if (response.data['status']) {
-      prefs.setString("token",response.data["token"]);
+    if (responseData.status == ResponseStatus.SUCCESS) {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => MyJiivo(
-            user: response.data['user'] ??
+            user: responseData.data['user'] ??
                 " ", // response.data['user'] == null ? "" : response.data['user']
           ),
         ),
       );
+      // Navigate forward
     } else {
-      Fluttertoast.showToast(msg: response.data['message']);
-      print(response.data['message']);
+      Fluttertoast.showToast(msg: responseData.message);
     }
-    print(response);
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +76,7 @@ class _LoginPageState extends State<HomePage> {
               children: [
                 SizedBox(height: 120,),
                 Container(
-                  alignment: Alignment.centerLeft,
+                    alignment: Alignment.centerLeft,
                     child: Text("Sign In",style: TextStyle(color: Color(0xFF2E3748),fontSize: 35,fontWeight: FontWeight.w700),)),
                 SizedBox(height: 20,),
                 Container(
@@ -96,7 +86,7 @@ class _LoginPageState extends State<HomePage> {
                     decoration: InputDecoration(
                         border: OutlineInputBorder(borderSide: BorderSide(color: Color(0x01FF8701)),borderRadius: BorderRadius.all(Radius.circular(15.0))),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
                             borderSide: BorderSide(color: Color(0xFFFF8701),width: 2)
                         ),
                         labelText: 'Number',
@@ -115,7 +105,7 @@ class _LoginPageState extends State<HomePage> {
                     decoration: InputDecoration(
                         border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15.0))),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
                             borderSide: BorderSide(color: Color(0xFFFF8701),width: 2)
                         ),
                         suffixIcon: IconButton(
@@ -133,7 +123,7 @@ class _LoginPageState extends State<HomePage> {
                 ),
                 SizedBox(height: 5,),
                 Container(
-                  alignment: Alignment.centerRight,
+                    alignment: Alignment.centerRight,
                     child: Text("Forgot password?",style: TextStyle(color: Color(0xFF9FA5BB),fontSize: 12),)),
                 SizedBox(
                   height: 30,
@@ -191,20 +181,20 @@ class _LoginPageState extends State<HomePage> {
                 Text("-Or sign in with Fingerprint-",style: TextStyle(color: Color(0xFF1E2C40),fontSize: 15),),
                 SizedBox(height: 15,),
                 Container(
-                  alignment: Alignment.bottomCenter,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xFF87015C),
-                        offset: const Offset(
-                          0.0,
-                          3.0,
+                    alignment: Alignment.bottomCenter,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xFF87015C),
+                          offset: const Offset(
+                            0.0,
+                            3.0,
+                          ),
+                          blurRadius: 6.0,
                         ),
-                        blurRadius: 6.0,
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                     child: Image.asset("img/fingerprint.png",height: 58,))
               ],
             ),

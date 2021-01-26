@@ -440,7 +440,7 @@ class _PastEventState extends State<PastEvent> {
         itemCount: listpast.events.length,
         itemBuilder: (context, index) {
           Welcoming past = listpast;
-          return CurrentEvents(
+          return PastEvents(
             title: past.events[index].title,
             image: past.events[index].bannerImage,
             location: past.events[index].location,
